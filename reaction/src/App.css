@@ -1,0 +1,127 @@
+:root {
+  font-family: 'DM Sans', sans-serif;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+  background: #f2e8e0;
+}
+
+.page-body {
+  padding-bottom: 40px;
+}
+
+.cart-drawer {
+  position: fixed;
+  top: 0;
+  right: -100%;
+  width: min(380px, 100vw);
+  height: 100vh;
+  background: #fff;
+  box-shadow: -18px 0 36px rgba(0, 0, 0, 0.16);
+  transition: right 0.24s ease;
+  z-index: 260;
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+
+.cart-drawer.open {
+  right: 0;
+}
+
+.cart-backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.3);
+  z-index: 240;
+}
+
+.cart-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
+}
+
+.cart-body {
+  flex: 1;
+  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.cart-empty {
+  padding: 24px;
+  background: #f9f5f1;
+  border-radius: 16px;
+  color: #634832;
+}
+
+.cart-item {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 14px;
+  align-items: center;
+  padding: 14px;
+  background: #fff;
+  border-radius: 14px;
+  border: 1px solid #ede0d8;
+}
+
+.qty-row {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 10px;
+}
+
+.qty-row button {
+  width: 28px;
+  height: 28px;
+  border: 1px solid #d7c7b8;
+  background: #fff;
+  color: #38220f;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.cart-footer {
+  padding-top: 16px;
+  border-top: 1px solid #ede0d8;
+}
+
+.checkout-btn {
+  width: 100%;
+}
+
+.text-muted {
+  color: #634832;
+  font-size: 13px;
+}
+
+@media (max-width: 760px) {
+  .hero {
+    padding: 48px 20px 0;
+  }
+
+  nav {
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 0 20px;
+  }
+
+  nav ul {
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+
+  .feat-grid,
+  .why-grid,
+  .recipes-grid,
+  .shop-grid {
+    grid-template-columns: 1fr;
+  }
+}

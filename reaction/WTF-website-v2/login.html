@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/><meta name="viewport" content="width=device-width,initial-scale=1"/>
+<title>Login – WTF</title>
+<link rel="stylesheet" href="s.css"/>
+</head>
+<body>
+<nav>
+  <a class="nav-brand" href="index.html"><b>WTF</b><span>What The Food</span></a>
+  <ul>
+    <li><a href="index.html" id="nl-home">Home</a></li>
+    <li><a href="plan.html" id="nl-plan">Plan My Meals</a></li>
+    <li><a href="recipes.html" id="nl-rec">Recipes</a></li>
+    <li><a href="shop.html" id="nl-shop">Shop</a></li>
+    <li><a href="about.html" id="nl-about">About</a></li>
+    <li><a href="transactions.html" id="nl-tx">Transactions</a></li>
+  </ul>
+  <div class="nav-r">
+    <button class="cart-ico" onclick="openCart()">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20"><path d="M6 2L3 6v14a2 2 0 002 2h14a2 2 0 002-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 01-8 0"/></svg>
+      <span class="badge" id="cart-count">0</span>
+    </button>
+    <a href="login.html" class="btn-login">Login</a>
+  </div>
+</nav>
+<script>document.getElementById('nl-home').classList.add('on');</script>
+
+<div class="login-wrap" id="sec-login">
+  <div class="login-card">
+    <h2>Welcome Back!</h2>
+    <p class="sub">Login to your WTF account</p>
+    <div class="fgrp"><label>Username</label><input type="text" placeholder="Enter your username"/></div>
+    <div class="fgrp"><label>Password</label><input type="password" placeholder="Enter your password"/></div>
+    <div class="frow">
+      <label><input type="checkbox"/> Remember me</label>
+      <a href="#">Forgot password?</a>
+    </div>
+    <button class="btn-p" style="width:100%;text-align:center;padding:12px;font-size:14px" onclick="alert('Login successful! (demo)')">Login</button>
+    <hr/>
+    <p class="login-sw">Don't have an account? <a onclick="showSec('sec-signup')">Sign up</a></p>
+    <a href="index.html" class="back">← Back to Home</a>
+  </div>
+</div>
+<div class="login-wrap" id="sec-signup" style="display:none">
+  <div class="login-card">
+    <h2>Create Account</h2>
+    <p class="sub">Join the WTF food community</p>
+    <div class="fgrp"><label>Full Name</label><input type="text" placeholder="Your name"/></div>
+    <div class="fgrp"><label>Email</label><input type="email" placeholder="you@email.com"/></div>
+    <div class="fgrp"><label>Username</label><input type="text" placeholder="Choose a username"/></div>
+    <div class="fgrp"><label>Password</label><input type="password" placeholder="Create a password"/></div>
+    <button class="btn-p" style="width:100%;text-align:center;padding:12px;font-size:14px" onclick="alert('Account created! (demo)')">Sign Up</button>
+    <hr/>
+    <p class="login-sw">Already have an account? <a onclick="showSec('sec-login')">Login</a></p>
+    <a href="index.html" class="back">← Back to Home</a>
+  </div>
+</div>
+<script>function showSec(id){document.querySelectorAll('.login-wrap').forEach(e=>e.style.display='none');document.getElementById(id).style.display='flex';}</script>
+
+<div class="cart-ov" id="cart-ov" onclick="closeCart()"></div>
+<aside class="cart-sb" id="cart-sb">
+  <div class="cart-hd"><span>Shopping Cart</span><button onclick="closeCart()">✕</button></div>
+  <div class="cart-items" id="cart-items"><p class="cart-empty">Your cart is empty.</p></div>
+  <div class="cart-ft">
+    <div class="cart-total">Total: <span id="cart-total">₱0.00</span></div>
+    <button class="btn-p" style="width:100%;text-align:center;padding:12px" onclick="doCheckout()">Checkout</button>
+  </div>
+</aside>
+<footer><p>© 2026 WTF – What The Food. All rights reserved.</p></footer>
+<script>
+let cart=JSON.parse(localStorage.getItem('wtf_cart')||'[]');
+let txLog=JSON.parse(localStorage.getItem('wtf_log')||'[]');
+let txHist=JSON.parse(localStorage.getItem('wtf_hist')||'[]');
+function saveAll(){localStorage.setItem('wtf_cart',JSON.stringify(cart));localStorage.setItem('wtf_log',JSON.stringify(txLog));localStorage.setItem('wtf_hist',JSON.stringify(txHist));}
+function ts(){return new Date().toLocaleTimeString('en-PH',{hour:'2-digit',minute:'2-digit',second:'2-digit'});}
+function dateStr(){return new Date().toLocaleDateString('en-PH',{year:'numeric',month:'short',day:'numeric'})+' '+ts();}
+function addLog(type,text,amount){txLog.unshift({type,text,amount,time:ts(),date:dateStr()});if(txLog.length>100)txLog.pop();saveAll();}
+function addToCart(id,name,price,emoji){
+  const ex=cart.find(i=>i.id===id);
+  if(ex){ex.qty++;addLog('update','Increased qty: '+name,'₱'+(price*ex.qty).toFixed(2));}
+  else{cart.push({id,name,price,emoji,qty:1});addLog('add','Added to cart: '+name,'₱'+price.toFixed(2));}
+  saveAll();updateCount();renderCart();
+  const b=document.querySelector('[data-id="'+id+'"]');
+  if(b){const old=b.innerHTML;b.innerHTML='✓ Added';setTimeout(()=>b.innerHTML=old,1400);}
+}
+function removeFromCart(id){const it=cart.find(i=>i.id===id);if(it)addLog('remove','Removed: '+it.name,'');cart=cart.filter(i=>i.id!==id);saveAll();updateCount();renderCart();}
+function changeQty(id,d){const it=cart.find(i=>i.id===id);if(!it)return;it.qty+=d;if(it.qty<=0){addLog('remove','Removed: '+it.name,'');cart=cart.filter(i=>i.id!==id);}else addLog('update','Qty: '+it.name+' → '+it.qty,'₱'+(it.price*it.qty).toFixed(2));saveAll();updateCount();renderCart();}
+function doCheckout(){
+  if(!cart.length){alert('Your cart is empty!');return;}
+  const total=cart.reduce((s,i)=>s+i.price*i.qty,0);
+  const txId='TXN-'+Date.now().toString().slice(-6);
+  const items=cart.map(i=>i.name+' x'+i.qty).join(', ');
+  txHist.unshift({id:txId,date:dateStr(),items,total,status:'Completed'});
+  addLog('checkout','Checkout: '+txId,'₱'+total.toFixed(2));
+  cart=[];saveAll();updateCount();renderCart();closeCart();
+  alert('Order placed! Transaction ID: '+txId);
+}
+function updateCount(){const n=cart.reduce((s,i)=>s+i.qty,0);document.querySelectorAll('#cart-count').forEach(e=>e.textContent=n);}
+function renderCart(){
+  const el=document.getElementById('cart-items');if(!el)return;
+  const tot=document.getElementById('cart-total');
+  if(!cart.length){el.innerHTML='<p class="cart-empty">Your cart is empty.</p>';if(tot)tot.textContent='₱0.00';return;}
+  el.innerHTML=cart.map(i=>`<div class="ci"><div class="ci-thumb">${i.emoji}</div><div class="ci-info"><div class="ci-name">${i.name}</div><div class="ci-price">₱${i.price.toFixed(2)}</div></div><div class="ci-qty"><button onclick="changeQty('${i.id}',-1)">−</button><span>${i.qty}</span><button onclick="changeQty('${i.id}',1)">+</button></div><button class="ci-del" onclick="removeFromCart('${i.id}')">🗑</button></div>`).join('');
+  const t=cart.reduce((s,i)=>s+i.price*i.qty,0);if(tot)tot.textContent='₱'+t.toFixed(2);
+}
+function openCart(){document.getElementById('cart-sb').classList.add('on');document.getElementById('cart-ov').classList.add('on');renderCart();}
+function closeCart(){document.getElementById('cart-sb').classList.remove('on');document.getElementById('cart-ov').classList.remove('on');}
+updateCount();renderCart();
+</script>
+</body>
+</html>
